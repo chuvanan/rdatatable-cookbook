@@ -10,10 +10,10 @@ Oct 2019). To put the number in perspective, two of the most popular R packages
 `dplyr` and `ggplot2` has 3.1k and 4.1k stars respectively (`data.table` , by
 the way, has been starred 2.1k times).
 
-My aim is to increase the reach of `R` in general and `data.table` in
-particular, especially to beginners. I try my best to keep the work of Julia as
-original as possible and also providing more detailed explanation or good
-practice if needed. Of course, any mistake is mine.
+This project is my attempt is to increase the reach of `R` in general and
+`data.table` in particular, especially to beginners. I try my best to keep the
+work of Julia as original as possible and also providing more detailed
+explanation or good practice if needed. Of course, any mistake is mine.
 
 ## table of contents
 
