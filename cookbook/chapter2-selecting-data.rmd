@@ -1,0 +1,107 @@
+---
+title: "Chapter 2"
+output:
+  html_document:
+    css: style.css
+    highlight: tango
+---
+
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.align = "center", comment = "#>", message = FALSE)
+```
+
+```{r}
+require(data.table)
+require(ggplot2)
+theme_set(
+    theme_bw(base_size = 17, base_family = "Lato") +
+    theme(panel.grid = element_blank(), panel.border = element_blank())
+)
+```
+
+## 2.1 Import data
+
+We're going to use a new dataset here, to demonstrate how to deal with larger
+datasets. This is a subset of the of 311 service requests from [NYC Open Data](https://nycopendata.socrata.com/Social-Services/311-Service-Requests-from-2010-to-Present/erm2-nwe9).
+
+```{r}
+complaints <- fread("../data/311-service-requests.csv")
+sprintf("Shape of the dataset: %d observations and %d variables", NROW(complaints), NCOL(complaints))
+```
+
+## 2.2 What's even in it? (the summary)
+
+Let's take a look at the dataset. By default, S3 `print` method for `data.table`
+object only show the first 5 rows and the last 5 rows. (For illustrative
+purpose, I only show the first six columns)
+
+```{r}
+print(complaints)
+```
+
+## 2.3 Selecting columns and rows
+
+There are several ways to select a columns in `data.table`. Here are some of
+common ways:
+
+* By name using character
+
+```{r}
+complaints[, "Complaint Type"]
+```
+
+* By position using integer
+
+```{r}
+complaints[, 6]
+```
+
+* By name using bare column names
+
+```{r}
+complaints[, list(`Complaint Type`)] # or complaints[, .(`Complaint Type`)]
+```
+
+
+## 2.4 Selecting multiple columns
+
+
+```{r}
+## integer indexing (like data.frame)
+complaints[, 1:3]
+## character indexing (like data.frame)
+output1 <- complaints[, c("Agency Name", "Street Name", "Status")]
+print(output1)
+## bare column names (only works with data.table)
+output2 <- complaints[, .(`Agency Name`, `Street Name`, Status)]
+identical(output1, output2)
+## or more verbose way:
+output3 <- complaints[, list(`Agency Name`, `Street Name`, Status)]
+identical(output1, output3)
+```
+
+## 2.5 What's the most common complaint type?
+
+
+* The normal way
+
+```{r}
+count_complaint <- complaints[, tapply(`Unique Key`, `Complaint Type`, length)]
+## or: complaints[, table(`Complaint Type`)]
+print(class(count_complaint))
+## noted that the output is an array, not a data.table object, you can treat it like a vector (i.e sorting it)
+count_complaint <- count_complaint[order(count_complaint, decreasing = TRUE)]
+count_complaint[1:10]
+```
+
+* The `data.table` way
+
+```{r}
+count_complaint2 <- complaints[, .(n = length(`Unique Key`)), by = .(`Complaint Type`)]
+count_complaint2 <- count_complaint2[order(n, decreasing = TRUE)]
+print(count_complaint2)
+## or more concise
+count_complain3 <- complaints[, .(n = .N), by = .(`Complaint Type`)][order(n, decreasing = TRUE)]
+identical(count_complaint2, count_complain3)
+```
