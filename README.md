@@ -19,7 +19,7 @@ practice if needed. Of course, any mistake is mine.
 
 * Chapter 1: Reading from A CSV file
 
-* Chapter 2: Selecting data & finding the most common complaint type
+* [Chapter 2: Selecting data & finding the most common complaint type](http://htmlpreview.github.io/?https://github.com/chuvanan/rdatatable-cookbook/blob/master/cookbook/chapter2-selecting-data.html)
 
 * Chapter 3: Which borough has the most noise complaints? (or, more selecting data)
 
