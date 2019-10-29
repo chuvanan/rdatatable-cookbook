@@ -1,0 +1,71 @@
+---
+title: "Chapter 1"
+output:
+  html_document:
+    css: style.css
+    highlight: tango
+---
+
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, echo = TRUE, fig.align = "center")
+```
+
+```{r, include=FALSE}
+require(data.table)
+require(ggplot2)
+theme_set(
+    theme_bw(base_size = 17, base_family = "Lato") +
+    theme(panel.grid = element_blank(), panel.border = element_blank())
+)
+```
+
+# 1.1 Reading data from a csv file
+
+The workhorse function for reading data from a CSV file is `fread`. Similar to
+`base::read.csv` or `readr::read_csv` or `pandas.read_csv`, it assumes the
+separator between columns is `comma (,)`.
+
+Our example data in this tutorial is cyclist data (source [here](http://donnees.ville.montreal.qc.ca/dataset/velos-comptage) - in
+French). Fortunately, Julia has pulled the data which
+
+```{r}
+broken_dt <- fread("../data/bikes.csv")
+```
+
+```{r}
+bikes <- fread("../data/bikes.csv", sep = ";", encoding = "Latin-1", fill = TRUE, index = "Date")
+bikes[, Date := as.Date(Date, "%d/%m/%Y")]
+head(bikes)
+bikes[17]
+```
+
+
+# 1.2 Inspecting the structure of `data.table` object
+
+```{r}
+class(bikes)
+str(bikes)
+```
+
+# 1.3 Selecting a column
+
+There are several ways to select column from a `data.table` object.
+
+* Like a normal `data.frame`
+
+```{r}
+bikes[, "Berri 1"] # character sub-setting
+bikes[, 2L]         # integer sub-setting, not recommended
+```
+* The `data.table` way
+
+```{r}
+bikes[, .(`Berri 1`)] # same as bikes[, list(`Berri 1`)]
+```
+
+Note that `data.table` enables selecting column using bare variable thanks to
+meta-programming in R.
+
+
+# 1.4 Other little known gems of `fread`

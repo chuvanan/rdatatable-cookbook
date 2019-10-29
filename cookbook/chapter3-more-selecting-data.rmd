@@ -1,0 +1,99 @@
+---
+title: "Chapter 3"
+output:
+  html_document:
+    css: style.css
+    highlight: tango
+---
+
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, echo = TRUE, fig.align = "center", comment = "#>", message = FALSE)
+```
+
+```{r}
+require(data.table)
+require(ggplot2)
+theme_set(
+    theme_bw(base_size = 14, base_family = "Lato") +
+    theme(panel.grid = element_blank(), panel.border = element_blank())
+)
+```
+
+Let's continue with our NYC 311 service requests example.
+
+```{r}
+complaints <- fread("../data/311-service-requests.csv")
+```
+
+# 3.1 Selecting only noise complaints
+
+I'd like to know which borough has the most noise complaints. First, we'll take
+a look at the data to see what it looks like:
+
+```{r}
+complaints[1:6, 1:6]
+```
+
+To get the noise complaints, we need to find the rows where the "Complaint Type"
+column is "Noise - Street/Sidewalk". I'll show you how to do that, and then
+explain what's going on.
+
+```{r}
+noise_complaints <- complaints[`Complaint Type` == "Noise - Street/Sidewalk"]
+noise_complaints[1:3, 1:10]
+```
+
+If you look at `noise_complaints`, you'll see that this worked, and it only
+contains complaints with the right complaint type. But how does this work? Let's
+deconstruct it into two pieces.
+
+
+```{r}
+complaints[, `Complaint Type` == "Noise - Street/Sidewalk"][1:10]
+```
+
+This is a big array of `TRUE` and `FALSE` , one for each row in our
+dataframe. When we index our dataframe with this array, we get just the rows
+where our boolean array evaluated to True. It's important to note that for row
+filtering by a boolean array the length of our dataframe's index must be the
+same length as the boolean array used for filtering.
+
+You can also combine more than one condition with the & operator like this:
+
+```{r}
+is_noise <- complaints[, `Complaint Type` == "Noise - Street/Sidewalk"]
+in_brooklyn <- complaints[, `Borough` == "BROOKLYN"]
+complaints[is_noise & in_brooklyn][1:6, 1:6]
+
+## or if we wanted a few columns
+complaints[is_noise & in_brooklyn][1:6, c('Complaint Type', 'Borough', 'Created Date', 'Descriptor')]
+```
+
+# 3.2 A digression about numpy arrays
+
+
+# 3.3 So, which borough has the most noise complaints?
+
+```{r}
+noise_complaints <- complaints[`Complaint Type` == "Noise - Street/Sidewalk"]
+count_noise_complaints <- noise_complaints[, .(n_noise = .N), by = .(Borough)][order(n_noise, decreasing = TRUE)]
+
+count_noise_complaints <- merge(count_noise_complaints,
+                                complaints[, .(n_complaint = .N), by = .(Borough)],
+                                by = "Borough")
+
+count_noise_complaints[, p_noise := n_noise / n_complaint]
+print(count_noise_complaints)
+```
+
+```{r}
+ggplot(count_noise_complaints, aes(reorder(Borough, p_noise), p_noise)) +
+    geom_col(fill = "palegreen4", width = 0.7) +
+    geom_hline(yintercept = seq(0, 0.03, 0.01), color = "white") +
+    labs(x = NULL, y = "percent of noise complaints") +
+    coord_flip()
+```
+
+So Manhattan really does complain more about noise than the other boroughs!
+Neat.
