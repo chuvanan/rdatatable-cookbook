@@ -37,8 +37,9 @@ or good practice if needed. Of course, any mistake is mine.
 
 ## how to use this cookbook
 
-* The easiest clone the repository to your local computer. You need the latest
-  version of `R` (3.6.1):
+* The easiest way is to clone the repository to your local computer. You need
+  the latest version of `R` (3.6.1) installed before you do the following
+  instructions:
 
 ``` bash
 git clone https://github.com/chuvanan/rdatatable-cookbook.git
