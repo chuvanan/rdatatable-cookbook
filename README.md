@@ -17,11 +17,11 @@ or good practice if needed. Of course, any mistake is mine.
 
 ## table of contents
 
-* Chapter 1: Reading from A CSV file
+* [Chapter 1: Reading from A CSV file](http://htmlpreview.github.io/?https://github.com/chuvanan/rdatatable-cookbook/blob/master/cookbook/chapter1-reading-from-a-csv.html)
 
 * [Chapter 2: Selecting data & finding the most common complaint type](http://htmlpreview.github.io/?https://github.com/chuvanan/rdatatable-cookbook/blob/master/cookbook/chapter2-selecting-data.html)
 
-* Chapter 3: Which borough has the most noise complaints? (or, more selecting data)
+* [Chapter 3: Which borough has the most noise complaints? (or, more selecting data)](http://htmlpreview.github.io/?https://github.com/chuvanan/rdatatable-cookbook/blob/master/cookbook/chapter3-more-selecting-data.html)
 
 * Chapter 4: Find out on which weekday people bike the most with groupby and aggregate
 
