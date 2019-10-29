@@ -12,8 +12,8 @@ the way, has been starred 2.1k times).
 
 This project is my attempt is to increase the reach of `R` in general and
 `data.table` in particular, especially to beginners. I try my best to keep the
-work of Julia as original as possible and also providing more detailed
-explanation or good practice if needed. Of course, any mistake is mine.
+work of Julia as original as possible and also provide more detailed explanation
+or good practice if needed. Of course, any mistake is mine.
 
 ## table of contents
 
@@ -37,7 +37,16 @@ explanation or good practice if needed. Of course, any mistake is mine.
 
 ## how to use this cookbook
 
-* [TODO]
+* The easiest clone the repository to your local computer. You need the latest
+  version of `R` (3.6.1):
+
+``` bash
+git clone https://github.com/chuvanan/rdatatable-cookbook.git
+cd rdatatable-cookbook
+Rscript -e "install.packages('renv'); renv::restore()"
+```
+
+* All R Markdown files are stored in folder `cookbook`. You are ready to go.
 
 ## contribute!
 
