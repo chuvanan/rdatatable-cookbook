@@ -2,6 +2,8 @@
 
 ## `data.table` cookbook
 
+[**work in progress**]
+
 This is a [clone](https://github.com/jvns/pandas-cookbook) of `Pandas cookbook`
 by Julia Evans, but using the R's excellent `data.table` package.
 
@@ -17,7 +19,7 @@ or good practice if needed. Of course, any mistake is mine.
 
 ## table of contents
 
-* [Chapter 1: Reading from A CSV file](http://htmlpreview.github.io/?https://github.com/chuvanan/rdatatable-cookbook/blob/master/cookbook/chapter1-reading-from-a-csv.html)
+* [Chapter 1: Reading from a CSV file](http://htmlpreview.github.io/?https://github.com/chuvanan/rdatatable-cookbook/blob/master/cookbook/chapter1-reading-from-a-csv.html)
 
 * [Chapter 2: Selecting data & finding the most common complaint type](http://htmlpreview.github.io/?https://github.com/chuvanan/rdatatable-cookbook/blob/master/cookbook/chapter2-selecting-data.html)
 
