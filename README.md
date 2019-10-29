@@ -48,7 +48,7 @@ Rscript -e "install.packages('renv'); renv::restore()"
 ```
 
 * The above code will download the repository to your machine. And the great
-  [`env`](https://rstudio.github.io/renv/index.html) package will do the
+  [`renv`](https://rstudio.github.io/renv/index.html) package will do the
   critical job that makes sure you have all required packages to run the code
   yourself.
 
