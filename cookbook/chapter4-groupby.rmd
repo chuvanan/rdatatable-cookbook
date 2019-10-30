@@ -1,0 +1,119 @@
+---
+title: "Chapter 4"
+output:
+  html_document:
+    css: style.css
+    highlight: tango
+---
+
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, echo = TRUE, fig.align = "center", comment = "#>", message = FALSE)
+```
+
+```{r}
+require(data.table)
+require(ggplot2)
+theme_set(
+    theme_bw(base_size = 14, base_family = "Lato") +
+    theme(panel.grid = element_blank(), panel.border = element_blank())
+)
+```
+
+Okay! We're going back to our bike path dataset here. I live in Montreal, and I
+was curious about whether we're more of a commuter city or a biking-for-fun city
+-- do people bike more on weekends, or on weekdays?
+
+
+# 4.1 Adding a 'weekday' column to our dataframe
+
+First, we need to load up the data. We've done this before.
+
+```{r}
+bikes <- fread("../data/bikes.csv", sep = ";", encoding = "Latin-1", fill = TRUE, index = "Date")
+bikes[, Date := as.Date(Date, "%d/%m/%Y")]
+
+## let's look at the dataset again
+head(bikes)
+```
+
+```{r}
+ggplot(bikes, aes(Date, `Berri 1`)) +
+    geom_line(color = "palegreen4")
+```
+
+
+Next up, we're just going to look at the Berri bike path. Berri is a street in
+Montreal, with a pretty important bike path. I use it mostly on my way to the
+library now, but I used to take it to work sometimes when I worked in Old
+Montreal.
+
+So we're going to create a dataframe with just the Berri bikepath in it.
+
+```{r}
+berri_bikes <- bikes[, .(Date, `Berri 1`)]
+berri_bikes[1:5]
+```
+
+Next, we need to add a `weekday` column. There are two ways to perform the
+task. Firstly, we can use function `base::weekdays()` which gives us names of
+days of the week. Or we can make use of `data.table` built-in utility function
+`wday()`. I used both.
+
+```{r}
+berri_bikes[, weekday_int := wday(Date)]
+berri_bikes[, weekday_str := weekdays(Date)]
+print(berri_bikes)
+```
+
+# 4.2 Adding up the cyclists by weekday
+
+This turns out to be really easy!
+
+Performing aggregation is one of distinctive feature of `data.table`, it is
+similar to SQL `GROUP BY`. You can check out the
+[documentation](https://rdatatable.gitlab.io/data.table/articles/datatable-intro.html#a-grouping-using-by)
+to learn more.
+
+In this case, `berri_bikes[, .(total_berri = sum('Berri 1')), by = .(weekday_str)]` means
+"Group the rows by weekday and then add up all the values with the same weekday".
+
+```{r}
+weekday_counts <- berri_bikes[, .(total_berri = sum(`Berri 1`)), by = .(weekday_str)]
+
+## we want an ordered vector of `weekday` which is really helpful for visualising
+weekday_counts[, weekday_str := factor(weekday_str,
+                                       levels = c("Monday", "Tuesday", "Wednesday", "Thursday",
+                                                  "Friday", "Saturday", "Sunday"),
+                                       ordered = TRUE)]
+
+ggplot(weekday_counts, aes(weekday_str, total_berri)) +
+    geom_col(fill = "goldenrod", width = 0.8) +
+    labs(x = NULL, y = NULL)
+```
+
+So it looks like Montrealers are commuter cyclists -- they bike much more during
+the week. Neat!
+
+
+# 4.3 Putting it all together
+
+Let's put all that together, to prove how easy it is.
+
+If you want to play around, try changing `sum` to `max`, `median`, or any other
+function you like.
+
+
+```{r, eval=FALSE}
+bikes <- fread("../data/bikes.csv", sep = ";", encoding = "Latin-1", fill = TRUE, index = "Date")
+bikes[, Date := as.Date(Date, "%d/%m/%Y")]
+berri_bikes[, weekday_str := weekdays(Date)]
+weekday_counts <- berri_bikes[, .(total_berri = sum(`Berri 1`)), by = .(weekday_str)]
+weekday_counts[, weekday_str := factor(weekday_str,
+                                       levels = c("Monday", "Tuesday", "Wednesday", "Thursday",
+                                                  "Friday", "Saturday", "Sunday"),
+                                       ordered = TRUE)]
+ggplot(weekday_counts, aes(weekday_str, total_berri)) +
+    geom_col(fill = "goldenrod", width = 0.8) +
+    labs(x = NULL, y = NULL)
+```
