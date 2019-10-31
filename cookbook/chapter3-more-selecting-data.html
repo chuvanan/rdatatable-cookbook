@@ -312,8 +312,8 @@ h6 {
 
 <style type="text/css">
 body {
-font-family: Carlito;
-font-size: 17.6px;
+font-family: Roboto;
+font-size: 16px;
 }
 h1.title {
 font-family: Roboto;
@@ -508,7 +508,7 @@ summary {
 #&gt; 5: New York City Police Department Noise - Street/Sidewalk
 #&gt; 6: New York City Police Department Noise - Street/Sidewalk</code></pre>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" title="1"><span class="co">## or if we wanted a few columns</span></a>
-<a class="sourceLine" id="cb11-2" title="2">complaints[is_noise <span class="op">&amp;</span><span class="st"> </span>in_brooklyn][<span class="dv">1</span><span class="op">:</span><span class="dv">6</span>, <span class="kw">c</span>(<span class="st">'Complaint Type'</span>, <span class="st">'Borough'</span>, <span class="st">'Created Date'</span>, <span class="st">'Descriptor'</span>)]</a></code></pre></div>
+<a class="sourceLine" id="cb11-2" title="2">complaints[is_noise <span class="op">&amp;</span><span class="st"> </span>in_brooklyn][<span class="dv">1</span><span class="op">:</span><span class="dv">6</span>, <span class="kw">c</span>(<span class="st">&#39;Complaint Type&#39;</span>, <span class="st">&#39;Borough&#39;</span>, <span class="st">&#39;Created Date&#39;</span>, <span class="st">&#39;Descriptor&#39;</span>)]</a></code></pre></div>
 <pre><code>#&gt;             Complaint Type  Borough           Created Date
 #&gt; 1: Noise - Street/Sidewalk BROOKLYN 10/31/2013 12:30:36 AM
 #&gt; 2: Noise - Street/Sidewalk BROOKLYN 10/31/2013 12:05:10 AM
