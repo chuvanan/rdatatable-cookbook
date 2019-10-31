@@ -1,0 +1,77 @@
+---
+title: "Chapter 5"
+output:
+  html_document:
+    css: style.css
+    highlight: tango
+---
+
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, echo = TRUE, fig.align = "center", comment = "#>", message = FALSE)
+```
+
+```{r}
+require(data.table)
+require(ggplot2)
+theme_set(
+    theme_bw(base_size = 14, base_family = "Lato") +
+    theme(panel.grid = element_blank(), panel.border = element_blank())
+)
+```
+
+# Summary
+
+By the end of this chapter, we're going to have downloaded all of Canada's
+weather data for 2012, and saved it to a CSV.
+
+We'll do this by downloading it one month at a time, and then combining all the
+months together.
+
+Here's the temperature every hour for 2012!
+
+```{r, fig.width=10}
+weather_2012_final <- fread("../data/weather_2012.csv")
+str(weather_2012_final)
+
+## `Date/Time` column is in string format. Let convert it into proper datetime format.
+weather_2012_final[, `Date/Time` := as.POSIXct(`Date/Time`)]
+
+
+## and now we visualise one year of temperature data
+ggplot(weather_2012_final, aes(`Date/Time`, `Temp (C)`)) +
+    geom_line(color = "palegreen4") +
+    scale_y_continuous(breaks = seq(-30, 40, 10)) +
+    theme(panel.grid = element_line(colour = "gray90", size = 0.3))
+```
+
+# 5.1 Downloading one month of weather data
+
+When playing with the cycling data, I wanted temperature and precipitation data
+to find out if people like biking when it's raining. So I went to the site for
+[Canadian historical weather data](http://climate.weather.gc.ca/index_e.html#access),
+and figured out how to get it automatically.
+
+Here we're going to get the data for March 2012, and clean it up
+
+Here's an URL template you can use to get data in Montreal.
+
+```{r}
+url_template <- "http://climate.weather.gc.ca/climateData/bulkdata_e.html?format=csv&stationID=5415&Year={year}&Month={month}&timeframe=1&submit=Download+Data"
+```
+
+To get the data for March 2013, we need to format it with `month=3, year=2012`.
+
+```{r, eval=FALSE}
+url <- glue::glue(url_template, month = 3, year = 2012)
+weather_mar2012 <- fread(url, skip = 15, encoding = "Latin-1", header = TRUE)
+## warning: the API didn't work anymore
+```
+
+# 5.2 Plotting the temperature by hour of a day
+
+
+# 5.3 Getting the whole year of data
+
+
+# 5.4 Saving to a CSV
