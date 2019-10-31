@@ -27,7 +27,7 @@ or good practice if needed. Of course, any mistake is mine.
 
 * [Chapter 4: Find out on which weekday people bike the most with groupby and aggregate](http://htmlpreview.github.io/?https://github.com/chuvanan/rdatatable-cookbook/blob/master/cookbook/chapter4-groupby.html)
 
-* Chapter 5: Combining dataframes and scraping Canadian weather data
+* [Chapter 5: Combining dataframes and scraping Canadian weather data](http://htmlpreview.github.io/?https://github.com/chuvanan/rdatatable-cookbook/blob/master/cookbook/chapter5-scraping-data.html)
 
 * Chapter 6: String operations! Which month was the snowiest?
 
