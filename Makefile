@@ -1,7 +1,7 @@
 
 .PHONY: all
 
-all: chap1 chap2 chap3 chap4 chap5
+all: chap1 chap2 chap3 chap4 chap5 chap6
 
 .PHONY: chap1
 
@@ -33,7 +33,14 @@ cookbook/chapter4-groupby.html: cookbook/chapter4-groupby.rmd data/bikes.csv
 
 .PHONY: chap5
 
-chap5: cookbook/chapter4-scraping-data.html
+chap5: cookbook/chapter5-scraping-data.html
 
-cookbook/chapter4-scraping-data.html: cookbook/chapter5-scraping-data.rmd data/weather_2012.csv
+cookbook/chapter5-scraping-data.html: cookbook/chapter5-scraping-data.rmd data/weather_2012.csv
+	Rscript -e "rmarkdown::render('$<')"
+
+.PHONY: chap6
+
+chap6: cookbook/chapter6-string-operation.html
+
+cookbook/chapter6-string-operation.html: cookbook/chapter6-string-operation.rmd data/weather_2012.csv
 	Rscript -e "rmarkdown::render('$<')"
