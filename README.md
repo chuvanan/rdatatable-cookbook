@@ -29,7 +29,7 @@ or good practice if needed. Of course, any mistake is mine.
 
 * [Chapter 5: Combining dataframes and scraping Canadian weather data](http://htmlpreview.github.io/?https://github.com/chuvanan/rdatatable-cookbook/blob/master/cookbook/chapter5-scraping-data.html)
 
-* Chapter 6: String operations! Which month was the snowiest?
+* [Chapter 6: String operations! Which month was the snowiest?](http://htmlpreview.github.io/?https://github.com/chuvanan/rdatatable-cookbook/blob/master/cookbook/chapter6-string-operation.html)
 
 * Chapter 7: Cleaning up messy data
 

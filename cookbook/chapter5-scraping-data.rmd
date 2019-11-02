@@ -34,9 +34,9 @@ Here's the temperature every hour for 2012!
 weather_2012_final <- fread("../data/weather_2012.csv")
 str(weather_2012_final)
 
+
 ## `Date/Time` column is in string format. Let convert it into proper datetime format.
 weather_2012_final[, `Date/Time` := as.POSIXct(`Date/Time`)]
-
 
 ## and now we visualise one year of temperature data
 ggplot(weather_2012_final, aes(`Date/Time`, `Temp (C)`)) +
