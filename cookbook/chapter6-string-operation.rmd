@@ -1,0 +1,103 @@
+---
+title: "Chapter 6"
+output:
+  html_document:
+    css: style.css
+    highlight: tango
+---
+
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, echo = TRUE, fig.align = "center", comment = "#>", message = FALSE)
+```
+
+```{r}
+require(data.table)
+require(ggplot2)
+require(gridExtra)
+theme_set(
+    theme_bw(base_size = 14, base_family = "Lato") +
+    theme(panel.grid = element_blank(), panel.border = element_blank())
+)
+```
+
+
+We're going to go back to our weather data from Chapter 5, here.
+
+```{r}
+weather_2012_final <- fread("../data/weather_2012.csv")
+weather_2012_final[, `Date/Time` := as.POSIXct(`Date/Time`)]
+str(weather_2012_final)
+weather_2012_final[1:5]
+```
+
+# 6.1 String Operations
+
+You'll see that the 'Weather' column has a text description of the weather that
+was going on each hour. We'll assume it's snowing if the text description
+contains "Snow".
+
+We are going to use string processing functions from R's `base`.
+
+```{r}
+weather_description <- weather_2012_final[, .(`Date/Time`, Weather)]
+is_snowing <- weather_description[grepl("Snow", Weather)]
+head(is_snowing)
+
+## let us see when there is snow of the year
+ggplot(is_snowing, aes(`Date/Time`, 1)) +
+    geom_jitter(shape = 21, color = "white", fill = "palegreen4", size = 2) +
+    labs(x = NULL, y = NULL) +
+    theme(axis.title.y.left = element_blank(),
+          axis.text.y.left = element_blank(),
+          axis.ticks.y.left = element_blank(),
+          panel.grid = element_line(size = 0.3, color = "gray90"))
+```
+
+# 6.2 Use resampling to find the snowiest month
+
+```{r}
+
+monthly_temp <- weather_2012_final[, .(median_temp = median(`Temp (C)`)), by = .(month(`Date/Time`))]
+print(monthly_temp)
+
+p1 <- ggplot(monthly_temp, aes(factor(month), median_temp)) +
+    geom_col(fill = "darkorange") +
+    labs(x = NULL, y = "temperature (C)", title = "Temperature") +
+    theme(panel.grid.major.y = element_line(size = 0.3, color = "gray90"))
+p1
+```
+
+Unsurprisingly, July and August are the warmest.
+
+Now we want to know what is the percentage of time it was snowing each month.
+
+```{r}
+monthly_snow <- weather_description[, .(snowing_freq = mean(grepl("Snow", Weather))), by = .(month(`Date/Time`))]
+print(monthly_snow)
+
+p2 <- ggplot(monthly_snow, aes(factor(month), snowing_freq)) +
+    geom_col(fill = "palegreen4") +
+    labs(x = NULL, y = NULL, title = "Snowiness") +
+    theme(panel.grid.major.y = element_line(size = 0.3, color = "gray90"))
+p2
+```
+
+So now we know! In 2012, December was the snowiest month. Also, this graph
+suggests something that I feel -- it starts snowing pretty abruptly in November,
+and then tapers off slowly and takes a long time to stop, with the last snow
+usually being in April or May.
+
+
+# 6.3 Plotting temperature and snowiness stats together
+
+We can also combine these two statistics (temperature, and snowiness) into one
+dataframe and plot them together:
+
+```{r}
+weather_stats <- merge(monthly_temp, monthly_snow, by = "month")
+print(weather_stats)
+
+grid.arrange(p1, p2, ncol = 1)
+
+```
