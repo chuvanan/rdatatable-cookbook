@@ -1,0 +1,173 @@
+---
+title: "Chapter 7"
+output:
+  html_document:
+    css: style.css
+    highlight: tango
+---
+
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, echo = TRUE, fig.align = "center", comment = "#>", message = FALSE)
+```
+
+```{r}
+require(data.table)
+require(ggplot2)
+theme_set(
+    theme_bw(base_size = 14, base_family = "Lato") +
+    theme(panel.grid = element_blank(), panel.border = element_blank())
+)
+```
+
+One of the main problems with messy data is: how do you know if it's messy or
+not?
+
+We're going to use the NYC 311 service request dataset again here, since it's
+big and a bit unwieldy.
+
+```{r}
+requests <- fread("../data/311-service-requests.csv")
+```
+
+# 7.1 How do we know if it's messy?
+
+We're going to look at a few columns here. I know already that there are some
+problems with the zip code, so let's look at that first.
+
+To get a sense for whether a column has problems, I usually use `unique()` to
+look at all its values. If it's a numeric column, I'll instead plot a histogram
+to get a sense of the distribution.
+
+When we look at the unique values in "Incident Zip", it quickly becomes clear
+that this is a mess.
+
+Some of the problems:
+
+* Some have been parsed as strings, and some as floats
+
+* There are missing values
+
+* Some of the zip codes are 29616-0759 or 83
+
+* There are some missing values that `data.table` didn't recognize, like 'N/A'
+  and 'NO CLUE'
+
+What we can do:
+
+* Normalize 'N/A' and 'NO CLUE' into regular `NA`.
+
+* Look at what's up with the 83, and decide what to do
+
+* Make everything strings
+
+```{r}
+requests[, unique(`Incident Zip`)]
+```
+
+# 7.2 Fixing the nan values and string/float confusion
+
+We can pass a `na_values` option to `data.table::fread()` to clean this up a
+little bit. We can also specify that the type of Incident Zip is a string, not a
+float.
+
+
+```{r}
+na_values <- c("NO CLUE", "N/A", "", "NA")
+requests <- fread("../data/311-service-requests.csv", na.strings = c(na_values))
+requests[, unique(`Incident Zip`)]
+```
+
+# 7.3 What's up with the dashes?
+
+```{r}
+row_with_dashes <- requests[grepl("-", `Incident Zip`), ]
+print(NROW(row_with_dashes))
+print(row_with_dashes[, c(1:10)])
+```
+
+I thought these were missing data and originally deleted them like this:
+
+
+But then my friend Dave pointed out that 9-digit zip codes are normal. Let's
+look at all the zip codes with more than 5 digits, make sure they're okay, and
+then truncate them.
+
+```{r}
+long_zip_codes <- requests[nchar(`Incident Zip`) > 5]
+long_zip_codes[, unique(`Incident Zip`)]
+```
+
+Those all look okay to truncate to me.
+
+```{r}
+requests[, `Incident Zip` := substr(`Incident Zip`, 1, 5)]
+```
+
+Done
+
+Earlier I thought 00083 was a broken zip code, but turns out Central Park's zip
+code 00083! Shows what I know. I'm still concerned about the 00000 zip codes,
+though: let's look at that.
+
+```{r}
+requests[`Incident Zip` == "00000"]
+```
+
+This looks bad to me. Let's set these to `NA`.
+
+```{r}
+requests[`Incident Zip` == "00000", `Incident Zip` := NA]
+```
+
+Great. Let's see where we are now:
+
+```{r}
+requests[, sort(unique(`Incident Zip`))]
+```
+
+Amazing! This is much cleaner. There's something a bit weird here, though -- I
+looked up 77056 on Google maps, and that's in Texas.
+
+Let's take a closer look:
+
+```{r}
+zips <- requests[, `Incident Zip`]
+is_close <- startsWith(zips, "0") | startsWith(zips, "1")
+is_far <- !is_close & !is.na(zips)
+zips[is_far == TRUE]
+```
+
+```{r}
+requests[is_far, .(`Incident Zip`, Descriptor, City)][order(`Incident Zip`)]
+```
+
+Okay, there really are requests coming from LA and Houston! Good to
+know. Filtering by zip code is probably a bad way to handle this -- we should
+really be looking at the city instead.
+
+```{r}
+requests[, .N, by = .(CITY = toupper(City))][order(N, decreasing = TRUE)]
+```
+
+
+It looks like these are legitimate complaints, so we'll just leave them alone.
+
+# 7.4 Putting it together
+
+Here's what we ended up doing to clean up our zip codes, all together:
+
+
+```{r}
+na_values <- c("NO CLUE", "N/A", "NA", "")
+requests <- fread("../data/311-service-requests.csv", na.strings = na_values)
+
+fix_zip_codes <- function(zips) {
+    zips <- substr(zips, 1, 5)
+    zips[zips == "00000"] <- NA
+    return(zips)
+}
+
+requests[, `Incident Zip` := fix_zip_codes(`Incident Zip`)]
+requests[, unique(`Incident Zip`)]
+```
