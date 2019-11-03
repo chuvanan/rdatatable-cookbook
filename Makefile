@@ -1,7 +1,7 @@
 
 .PHONY: all
 
-all: chap1 chap2 chap3 chap4 chap5 chap6 chap7 chap8
+all: chap1 chap2 chap3 chap4 chap5 chap6 chap7 chap8 chap9
 
 .PHONY: chap1
 
@@ -57,4 +57,11 @@ cookbook/chapter7-cleaning-up-messy-data.html: cookbook/chapter7-cleaning-up-mes
 chap8: cookbook/chapter8-parsing-unix-timestamps.html
 
 cookbook/chapter8-parsing-unix-timestamps.html: cookbook/chapter8-parsing-unix-timestamps.rmd data/311-service-requests.csv
+	Rscript -e "rmarkdown::render('$<')"
+
+.PHONY: chap9
+
+chap9: cookbook/chapter9-loading-data-from-sql-database.html
+
+cookbook/chapter9-loading-data-from-sql-database.html: cookbook/chapter9-loading-data-from-sql-database.rmd
 	Rscript -e "rmarkdown::render('$<')"

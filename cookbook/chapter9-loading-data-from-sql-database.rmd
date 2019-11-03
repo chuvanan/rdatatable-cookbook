@@ -1,0 +1,93 @@
+---
+title: "Chapter 9"
+output:
+  html_document:
+    css: style.css
+    highlight: tango
+---
+
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, echo = TRUE, fig.align = "center",
+                      comment = "#>", message = FALSE, warning = FALSE)
+```
+
+```{r}
+require(DBI)
+require(data.table)
+require(ggplot2)
+theme_set(
+    theme_bw(base_size = 14, base_family = "Lato") +
+    theme(panel.grid = element_blank(), panel.border = element_blank())
+)
+```
+
+# 9.1 Reading data from SQL databases
+
+So far we've only talked about reading data from CSV files. That's a pretty
+common way to store data, but there are many others! HTML, JSON, relational
+databases, Excel (!!!), HDF5, Stata, to name a few. In this chapter we'll talk
+about reading data from SQL databases.
+
+I am going to introduce you to two new packages `DBI` and `RSQLite` rather than
+`data.table` because it was not designed to talk to relational databases, so it
+was not able to read or execute SQL.
+
+
+```{r}
+weather_db <- DBI::dbConnect(RSQLite::SQLite(), "../data/weather_2012.sqlite")
+dbListTables(weather_db)
+res <- dbSendQuery(weather_db, "SELECT * from weather_2012 LIMIT 3")
+dbFetch(res)
+dbDisconnect(weather_db)
+```
+
+# 9.2 Writing to a SQLite database
+
+```{r}
+weather_df <- fread("../data/weather_2012.csv")
+con <- dbConnect(RSQLite::SQLite(), "../data/test_db.sqlite")
+dbExecute(con, "DROP TABLE IF EXISTS weather_2012")
+dbWriteTable(con, "weather_2012", weather_df)
+dbDisconnect(con)
+```
+
+We can now read from the `weather_2012` table in `test_db.sqlite`, and we see
+that we get the same data back:
+
+```{r}
+con <- dbConnect(RSQLite::SQLite(), "../data/test_db.sqlite")
+res <- dbSendQuery(con, "SELECT * from weather_2012 LIMIT 3")
+dbFetch(res)
+dbDisconnect(con)
+```
+
+The nice thing about having your data in a database is that you can do arbitrary
+SQL queries. This is cool especially if you're more familiar with SQL. Here's an
+example of sorting by the Weather column:
+
+If you have a PostgreSQL database or MySQL database, reading from it works
+exactly the same way as reading from a SQLite database.
+
+# 9.3 Connecting to other kinds of database
+
+To connect to a [MySQL](https://db.rstudio.com/databases/my-sql/) database:
+
+```{r, eval=FALSE}
+## install.packages("RMariaDB")
+library(DBI)
+## Connect to my-db as defined in ~/.my.cnf
+con <- dbConnect(RMariaDB::MariaDB(), group = "my-db")
+```
+
+To connect to a [PostgreSQL](https://db.rstudio.com/databases/postgresql/) database:
+
+```{r, eval=FALSE}
+## install.packages("RPostgres")
+library(DBI)
+## Connect to the default postgres database
+con <- dbConnect(RPostgres::Postgres())
+```
+
+*Note: For these to work, you will need a working MySQL / PostgreSQL database,
+with the correct localhost, database name, etc.*
