@@ -1,0 +1,76 @@
+---
+title: "Chapter 8"
+output:
+  html_document:
+    css: style.css
+    highlight: tango
+---
+
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, echo = TRUE, fig.align = "center", comment = "#>", message = FALSE)
+```
+
+```{r}
+require(data.table)
+require(ggplot2)
+theme_set(
+    theme_bw(base_size = 14, base_family = "Lato") +
+    theme(panel.grid = element_blank(), panel.border = element_blank())
+)
+```
+
+# 8.1 Parsing Unix timestamps
+
+It's not obvious how to deal with Unix timestamps in `data.table` -- it took me
+quite a while to figure this out. The file we're using here is a
+popularity-contest file I found on my system at `/var/log/popularity-contest`.
+
+Here's an explanation of [how this file works](https://popcon.ubuntu.com/README).
+
+I'm going to hope that nothing in it is sensitive :)
+
+```{r}
+popcon <- fread("../data/popularity-contest.txt", skip = 1, sep = " ", header = FALSE, fill = TRUE)
+popcon <- popcon[!NROW(popcon)] # remove last row
+colnames(popcon) <- c("atime", "ctime", "package_name", "mu_program", "tag")
+```
+
+The colums are the access time, created time, package name, recently used
+program, and a tag.
+
+```{r}
+print(popcon[1:5])
+```
+
+```{r}
+popcon[, atime := as.POSIXct(as.integer(atime), origin = "1970-01-01")]
+popcon[, ctime := as.POSIXct(as.integer(ctime), origin = "1970-01-01")]
+```
+
+So now we can look at our `atime` and `ctime` as dates!
+
+```{r}
+print(popcon[1:5])
+```
+
+Now suppose we want to look at all packages that aren't libraries.
+
+First, I want to get rid of everything with timestamp 0. Notice how we can just
+use a string in this comparison, even though it's actually a timestamp on the
+inside?
+
+```{r}
+popcon <- popcon[atime > as.POSIXct("1970-01-01 00:00:00")]
+```
+
+Now we can use base R string abilities to just look at rows where the package
+name doesn't contain 'lib'.
+
+```{r}
+nonlibraries <- popcon[!grepl("lib", package_name)]
+nonlibraries[order(ctime, decreasing = TRUE)][1:10]
+```
+
+Okay, cool, it says that I I installed ddd recently. And postgresql! I remember
+installing those things. Neat.
