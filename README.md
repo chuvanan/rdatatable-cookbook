@@ -4,10 +4,11 @@
 
 [**work in progress**]
 
-This is a [clone](https://github.com/jvns/pandas-cookbook) of `Pandas cookbook`
-by Julia Evans, but using the R's excellent `data.table` package.
+This is a [clone](https://github.com/jvns/pandas-cookbook) of the fantastic
+`Pandas cookbook` by Julia Evans, but using the R's excellent `data.table`
+package.
 
-I am surprised that Julia's cookbook repo currently has around 4.1k stars (as of
+I am surprised that Julia's cookbook repo currently has about 4.1k stars (as of
 Oct 2019). To put the number in perspective, two of the most popular R packages
 `dplyr` and `ggplot2` has 3.1k and 4.1k stars respectively (`data.table` , by
 the way, has been starred 2.1k times).
@@ -35,7 +36,7 @@ or good practice if needed. Of course, any mistake is mine.
 
 * [Chapter 8: Parsing Unix timestamps](http://htmlpreview.github.io/?https://github.com/chuvanan/rdatatable-cookbook/blob/master/cookbook/chapter8-parsing-unix-timestamps.html)
 
-* Chapter 9: Loading data from SQL databases
+* [Chapter 9: Loading data from SQL databases](http://htmlpreview.github.io/?https://github.com/chuvanan/rdatatable-cookbook/blob/master/cookbook/chapter9-loading-data-from-sql-database.html)
 
 ## how to use this cookbook
 
