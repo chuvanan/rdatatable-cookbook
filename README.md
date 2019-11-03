@@ -33,7 +33,7 @@ or good practice if needed. Of course, any mistake is mine.
 
 * [Chapter 7: Cleaning up messy data](http://htmlpreview.github.io/?https://github.com/chuvanan/rdatatable-cookbook/blob/master/cookbook/chapter7-cleaning-up-messy-data.html)
 
-* Chapter 8: Parsing Unix timestamps
+* [Chapter 8: Parsing Unix timestamps](http://htmlpreview.github.io/?https://github.com/chuvanan/rdatatable-cookbook/blob/master/cookbook/chapter8-parsing-unix-timestamps.html)
 
 * Chapter 9: Loading data from SQL databases
 
