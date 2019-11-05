@@ -5,7 +5,7 @@
 [**work in progress**]
 
 This is a [clone](https://github.com/jvns/pandas-cookbook) of the fantastic
-`Pandas cookbook` by Julia Evans, but using the excellent R's `data.table`
+`Pandas cookbook` by Julia Evans, but using the excellent R's [`data.table`](https://rdatatable.gitlab.io/data.table/)
 package.
 
 This cookbook provides you with concrete examples with real-world data so that
