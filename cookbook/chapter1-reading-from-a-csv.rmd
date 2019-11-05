@@ -8,10 +8,10 @@ output:
 
 
 ```{r, include=FALSE}
-knitr::opts_chunk$set(cache = FALSE, echo = TRUE, fig.align = "center", message = "#>")
+knitr::opts_chunk$set(cache = FALSE, echo = TRUE, fig.align = "center", comment = "#>", message = FALSE)
 ```
 
-```{r, include=FALSE}
+```{r}
 require(data.table)
 require(ggplot2)
 theme_set(
