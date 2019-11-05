@@ -8,64 +8,106 @@ output:
 
 
 ```{r, include=FALSE}
-knitr::opts_chunk$set(cache = FALSE, echo = TRUE, fig.align = "center")
+knitr::opts_chunk$set(cache = FALSE, echo = TRUE, fig.align = "center", message = "#>")
 ```
 
 ```{r, include=FALSE}
 require(data.table)
 require(ggplot2)
 theme_set(
-    theme_bw(base_size = 17, base_family = "Lato") +
-    theme(panel.grid = element_blank(), panel.border = element_blank())
+    theme_bw(base_size = 14, base_family = "Lato") +
+    theme(panel.grid = element_line(size = 0.3, color = "gray90"),
+          panel.border = element_blank())
 )
 ```
 
 # 1.1 Reading data from a csv file
 
-The workhorse function for reading data from a CSV file is `fread`. Similar to
-`base::read.csv` or `readr::read_csv` or `pandas.read_csv`, it assumes the
-separator between columns is `comma (,)`.
+The workhorse function for reading data from a CSV file is `fread()`. This
+function works similarly to `base::read.csv()` or `readr::read_csv()` or
+`pandas.read_csv()`, it assumes (one of) the default separator between columns
+is `comma (,)`.
 
-Our example data in this tutorial is cyclist data (source [here](http://donnees.ville.montreal.qc.ca/dataset/velos-comptage) - in
-French). Fortunately, Julia has pulled the data which
+We're going to be looking some cyclist data from Montréal. Here's the [original page](http://donnees.ville.montreal.qc.ca/dataset/velos-comptage)
+(in French) but it's already included in this repository (`data/bikes.csv` ). We're
+using the data from 2012.
+
+This dataset is a list of how many people were on 7 different bike paths in
+Montreal, each day.
 
 ```{r}
 broken_dt <- fread("../data/bikes.csv")
 ```
 
+Oops, `fread` tell us that it stopped very early on line 17. Other clues include
+the separator is semi-colon `;` and there exists missing values. Let take a look
+at first few rows and see what we got:
+
 ```{r}
-bikes <- fread("../data/bikes.csv", sep = ";", encoding = "Latin-1", fill = TRUE, index = "Date")
-bikes[, Date := as.Date(Date, "%d/%m/%Y")]
-head(bikes)
-bikes[17]
+head(broken_dt, 3)
 ```
 
+You'll notice that something wrong with the column names! Fortunately, `fread`
+has a bunch of options that will let us fix that, though. Here we'll
 
-# 1.2 Inspecting the structure of `data.table` object
+* set the column separator explicitly to a `;`
+
+* set the encoding to 'latin1' (the default is 'utf8')
+
+Do it again:
+
+```{r}
+bikes <- fread("../data/bikes.csv", sep = ";", encoding = "Latin-1", fill = TRUE)
+head(bikes, 3) # looks OK
+```
+
+# 1.2 `data.table` object
+
+`data.table`, in its [title](https://github.com/Rdatatable/data.table/blob/master/DESCRIPTION),
+call itself an extension of `data.frame` which means two things:
+
+* it inherits all features of `data.frame`, everything you can do with
+  `data.frame` is applicable to `data.table`.
+
+* it has its own set of functions to manipulate (aggregate, add, modify, delete,
+  join, ...) data efficiently.
 
 ```{r}
 class(bikes)
+is.data.table(bikes)
 str(bikes)
 ```
 
 # 1.3 Selecting a column
 
-There are several ways to select column from a `data.table` object.
+There are several ways to select a column from a `data.table` object.
 
 * Like a normal `data.frame`
 
 ```{r}
-bikes[, "Berri 1"] # character sub-setting
+bikes[, "Berri 1"]  # character sub-setting
 bikes[, 2L]         # integer sub-setting, not recommended
 ```
 * The `data.table` way
 
 ```{r}
-bikes[, .(`Berri 1`)] # same as bikes[, list(`Berri 1`)]
+bikes[, .(`Berri 1`)] # use backticks to select non-syntactic names
+## or
+bikes[, list(`Berri 1`)]
+## be noted that `data.table` returns vector when you do not use .() or list()
+bikes[, `Berri 1`][1:10] # print out the first 10 values
 ```
 
-Note that `data.table` enables selecting column using bare variable thanks to
-meta-programming in R.
+# 1.4 Plotting
 
+Unlike Python's `pandas`, `data.table` does not support built-in plotting
+feature because it is unnecessary. The R world is rich of packages for making
+beautiful graphics.
 
-# 1.4 Other little known gems of `fread`
+My favorite tool is `ggplot2`.
+
+```{r}
+bikes[, Date := as.Date(Date, "%d/%m/%Y")] # don't worry if you don't understand this line
+ggplot(bikes, aes(Date, `Berri 1`)) +
+    geom_line(color = "orange")
+```

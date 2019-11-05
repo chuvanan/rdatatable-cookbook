@@ -9,7 +9,7 @@ This is a [clone](https://github.com/jvns/pandas-cookbook) of the fantastic
 package.
 
 This cookbook provides you with concrete examples with real-world data so that
-you find it easier to getting started with `data.table`.
+you'll find it easier to getting started with `data.table`.
 
 I am surprised that Julia's cookbook repo currently has about 4.1k stars (as of
 Oct 2019). To put the number in perspective, two of the most popular R packages
