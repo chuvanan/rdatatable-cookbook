@@ -469,9 +469,15 @@ summary {
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">require</span>(data.table)</a>
 <a class="sourceLine" id="cb1-2" title="2"><span class="kw">require</span>(ggplot2)</a>
 <a class="sourceLine" id="cb1-3" title="3"><span class="kw">theme_set</span>(</a>
-<a class="sourceLine" id="cb1-4" title="4">    <span class="kw">theme_bw</span>(<span class="dt">base_size =</span> <span class="dv">17</span>, <span class="dt">base_family =</span> <span class="st">&quot;Lato&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb1-4" title="4">    <span class="kw">theme_bw</span>(<span class="dt">base_size =</span> <span class="dv">14</span>, <span class="dt">base_family =</span> <span class="st">&quot;Lato&quot;</span>) <span class="op">+</span></a>
 <a class="sourceLine" id="cb1-5" title="5"><span class="st">    </span><span class="kw">theme</span>(<span class="dt">panel.grid =</span> <span class="kw">element_blank</span>(), <span class="dt">panel.border =</span> <span class="kw">element_blank</span>())</a>
 <a class="sourceLine" id="cb1-6" title="6">)</a></code></pre></div>
+<p>In this chapter we will be learning syntax for performing most common data manipulation tasks:</p>
+<ul>
+<li><p>pick variables based on their names</p></li>
+<li><p>pick rows based on their values</p></li>
+<li><p>aggregate data (counting) by groups</p></li>
+</ul>
 <div id="import-data" class="section level2">
 <h2>2.1 Import data</h2>
 <p>We’re going to use a new dataset here, to demonstrate how to deal with larger datasets. This is a subset of the of 311 service requests from <a href="https://nycopendata.socrata.com/Social-Services/311-Service-Requests-from-2010-to-Present/erm2-nwe9">NYC Open Data</a>.</p>
@@ -481,8 +487,8 @@ summary {
 </div>
 <div id="whats-even-in-it-the-summary" class="section level2">
 <h2>2.2 What’s even in it? (the summary)</h2>
-<p>Let’s take a look at the dataset. By default, S3 <code>print</code> method for <code>data.table</code> object only show the first 5 rows and the last 5 rows. (For illustrative purpose, I only show the first six columns)</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1"><span class="kw">print</span>(complaints)</a></code></pre></div>
+<p>Let’s take a look at the dataset. By default, the <code>print</code> function for <code>data.table</code> object only show the first 5 rows and the last 5 rows. (For illustrative purpose, I already truncated the output)</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1"><span class="kw">print</span>(complaints) <span class="co"># long-scrolling</span></a></code></pre></div>
 <pre><code>#&gt;         Unique Key           Created Date            Closed Date Agency
 #&gt;      1:   26589651 10/31/2013 02:08:41 AM                          NYPD
 #&gt;      2:   26593698 10/31/2013 02:01:04 AM                          NYPD
@@ -507,255 +513,13 @@ summary {
 #&gt; 111067:         New York City Police Department Noise - Street/Sidewalk
 #&gt; 111068:         New York City Police Department      Noise - Commercial
 #&gt; 111069:         New York City Police Department        Blocked Driveway
-#&gt;                            Descriptor       Location Type Incident Zip
-#&gt;      1:                  Loud Talking     Street/Sidewalk        11432
-#&gt;      2:  Commercial Overnight Parking     Street/Sidewalk        11378
-#&gt;      3:              Loud Music/Party Club/Bar/Restaurant        10032
-#&gt;      4:                Car/Truck Horn     Street/Sidewalk        10023
-#&gt;      5:  Condition Attracting Rodents          Vacant Lot        10027
-#&gt;     ---                                                               
-#&gt; 111065:          Structure - Outdoors                Park        11213
-#&gt; 111066: Posted Parking Sign Violation     Street/Sidewalk        11434
-#&gt; 111067:                  Loud Talking     Street/Sidewalk        10016
-#&gt; 111068:                  Loud Talking Club/Bar/Restaurant        11226
-#&gt; 111069:                Partial Access     Street/Sidewalk        11236
-#&gt;             Incident Address     Street Name     Cross Street 1
-#&gt;      1:     90-03 169 STREET      169 STREET          90 AVENUE
-#&gt;      2:            58 AVENUE       58 AVENUE           58 PLACE
-#&gt;      3:        4060 BROADWAY        BROADWAY    WEST 171 STREET
-#&gt;      4:       WEST 72 STREET  WEST 72 STREET    COLUMBUS AVENUE
-#&gt;      5:      WEST 124 STREET WEST 124 STREET       LENOX AVENUE
-#&gt;     ---                                                        
-#&gt; 111065:                                                        
-#&gt; 111066:                                                        
-#&gt; 111067:   344 EAST 28 STREET  EAST 28 STREET MOUNT CARMEL PLACE
-#&gt; 111068: 1233 FLATBUSH AVENUE FLATBUSH AVENUE           AVENUE D
-#&gt; 111069:  1259 EAST 94 STREET  EAST 94 STREET           AVENUE J
-#&gt;                           Cross Street 2  Intersection Street 1
-#&gt;      1:                        91 AVENUE                       
-#&gt;      2:                        59 STREET                       
-#&gt;      3:                  WEST 172 STREET                       
-#&gt;      4:                 AMSTERDAM AVENUE                       
-#&gt;      5: ADAM CLAYTON POWELL JR BOULEVARD                       
-#&gt;     ---                                                        
-#&gt; 111065:                                                        
-#&gt; 111066:                                  GUY R BREWER BOULEVARD
-#&gt; 111067:                         1 AVENUE                       
-#&gt; 111068:                   NEWKIRK AVENUE                       
-#&gt; 111069:                         AVENUE K                       
-#&gt;         Intersection Street 2 Address Type     City Landmark Facility Type
-#&gt;      1:                            ADDRESS  JAMAICA               Precinct
-#&gt;      2:                          BLOCKFACE  MASPETH               Precinct
-#&gt;      3:                            ADDRESS NEW YORK               Precinct
-#&gt;      4:                          BLOCKFACE NEW YORK               Precinct
-#&gt;      5:                          BLOCKFACE NEW YORK                    N/A
-#&gt;     ---                                                                   
-#&gt; 111065:                                    BROOKLYN                    N/A
-#&gt; 111066:    ROCKAWAY BOULEVARD INTERSECTION  JAMAICA               Precinct
-#&gt; 111067:                            ADDRESS NEW YORK               Precinct
-#&gt; 111068:                            ADDRESS BROOKLYN               Precinct
-#&gt; 111069:                            ADDRESS BROOKLYN               Precinct
-#&gt;           Status               Due Date Resolution Action Updated Date
-#&gt;      1: Assigned 10/31/2013 10:08:41 AM         10/31/2013 02:35:17 AM
-#&gt;      2:     Open 10/31/2013 10:01:04 AM                               
-#&gt;      3:   Closed 10/31/2013 10:00:24 AM         10/31/2013 02:39:42 AM
-#&gt;      4:   Closed 10/31/2013 09:56:23 AM         10/31/2013 02:21:10 AM
-#&gt;      5:  Pending 11/30/2013 01:53:44 AM         10/31/2013 01:59:54 AM
-#&gt;     ---                                                               
-#&gt; 111065:   Closed 10/18/2013 12:01:13 AM         10/07/2013 04:07:16 PM
-#&gt; 111066:   Closed 10/04/2013 08:01:05 AM         10/04/2013 02:13:50 AM
-#&gt; 111067:   Closed 10/04/2013 08:00:45 AM         10/04/2013 01:25:01 AM
-#&gt; 111068:   Closed 10/04/2013 08:00:28 AM         10/04/2013 04:17:32 AM
-#&gt; 111069:   Closed 10/04/2013 08:00:10 AM         10/04/2013 01:20:52 AM
-#&gt;         Community Board   Borough X Coordinate (State Plane)
-#&gt;      1:       12 QUEENS    QUEENS                    1042027
-#&gt;      2:       05 QUEENS    QUEENS                    1009349
-#&gt;      3:    12 MANHATTAN MANHATTAN                    1001088
-#&gt;      4:    07 MANHATTAN MANHATTAN                     989730
-#&gt;      5:    10 MANHATTAN MANHATTAN                     998815
-#&gt;     ---                                                     
-#&gt; 111065:     08 BROOKLYN  BROOKLYN                         NA
-#&gt; 111066:       13 QUEENS    QUEENS                    1048801
-#&gt; 111067:    06 MANHATTAN MANHATTAN                     990637
-#&gt; 111068:     14 BROOKLYN  BROOKLYN                     996654
-#&gt; 111069:     18 BROOKLYN  BROOKLYN                    1011804
-#&gt;         Y Coordinate (State Plane) Park Facility Name Park Borough
-#&gt;      1:                     197389        Unspecified       QUEENS
-#&gt;      2:                     201984        Unspecified       QUEENS
-#&gt;      3:                     246531        Unspecified    MANHATTAN
-#&gt;      4:                     222727        Unspecified    MANHATTAN
-#&gt;      5:                     233545        Unspecified    MANHATTAN
-#&gt;     ---                                                           
-#&gt; 111065:                         NA        Brower Park     BROOKLYN
-#&gt; 111066:                     178419        Unspecified       QUEENS
-#&gt; 111067:                     208987        Unspecified    MANHATTAN
-#&gt; 111068:                     172515        Unspecified     BROOKLYN
-#&gt; 111069:                     172470        Unspecified     BROOKLYN
-#&gt;         School Name School Number School Region School Code
-#&gt;      1: Unspecified   Unspecified   Unspecified Unspecified
-#&gt;      2: Unspecified   Unspecified   Unspecified Unspecified
-#&gt;      3: Unspecified   Unspecified   Unspecified Unspecified
-#&gt;      4: Unspecified   Unspecified   Unspecified Unspecified
-#&gt;      5: Unspecified   Unspecified   Unspecified Unspecified
-#&gt;     ---                                                    
-#&gt; 111065: Brower Park          B012                          
-#&gt; 111066: Unspecified   Unspecified   Unspecified Unspecified
-#&gt; 111067: Unspecified   Unspecified   Unspecified Unspecified
-#&gt; 111068: Unspecified   Unspecified   Unspecified Unspecified
-#&gt; 111069: Unspecified   Unspecified   Unspecified Unspecified
-#&gt;         School Phone Number
-#&gt;      1:         Unspecified
-#&gt;      2:         Unspecified
-#&gt;      3:         Unspecified
-#&gt;      4:         Unspecified
-#&gt;      5:         Unspecified
-#&gt;     ---                    
-#&gt; 111065:          7189658900
-#&gt; 111066:         Unspecified
-#&gt; 111067:         Unspecified
-#&gt; 111068:         Unspecified
-#&gt; 111069:         Unspecified
-#&gt;                                            School Address School City
-#&gt;      1:                                       Unspecified Unspecified
-#&gt;      2:                                       Unspecified Unspecified
-#&gt;      3:                                       Unspecified Unspecified
-#&gt;      4:                                       Unspecified Unspecified
-#&gt;      5:                                       Unspecified Unspecified
-#&gt;     ---                                                              
-#&gt; 111065: Brooklyn, St. Marks, Kingston Avenues, Park Place    BROOKLYN
-#&gt; 111066:                                       Unspecified Unspecified
-#&gt; 111067:                                       Unspecified Unspecified
-#&gt; 111068:                                       Unspecified Unspecified
-#&gt; 111069:                                       Unspecified Unspecified
-#&gt;         School State  School Zip School Not Found
-#&gt;      1:  Unspecified Unspecified                N
-#&gt;      2:  Unspecified Unspecified                N
-#&gt;      3:  Unspecified Unspecified                N
-#&gt;      4:  Unspecified Unspecified                N
-#&gt;      5:  Unspecified Unspecified                N
-#&gt;     ---                                          
-#&gt; 111065:           NY       11213                N
-#&gt; 111066:  Unspecified Unspecified                N
-#&gt; 111067:  Unspecified Unspecified                N
-#&gt; 111068:  Unspecified Unspecified                N
-#&gt; 111069:  Unspecified Unspecified                N
-#&gt;         School or Citywide Complaint Vehicle Type Taxi Company Borough
-#&gt;      1:                           NA                                  
-#&gt;      2:                           NA                                  
-#&gt;      3:                           NA                                  
-#&gt;      4:                           NA                                  
-#&gt;      5:                           NA                                  
-#&gt;     ---                                                               
-#&gt; 111065:                           NA                                  
-#&gt; 111066:                           NA                                  
-#&gt; 111067:                           NA                                  
-#&gt; 111068:                           NA                                  
-#&gt; 111069:                           NA                                  
-#&gt;         Taxi Pick Up Location Bridge Highway Name Bridge Highway Direction
-#&gt;      1:                                                                   
-#&gt;      2:                                                                   
-#&gt;      3:                                                                   
-#&gt;      4:                                                                   
-#&gt;      5:                                                                   
-#&gt;     ---                                                                   
-#&gt; 111065:                                                                   
-#&gt; 111066:                                                                   
-#&gt; 111067:                                                                   
-#&gt; 111068:                                                                   
-#&gt; 111069:                                                                   
-#&gt;         Road Ramp Bridge Highway Segment Garage Lot Name Ferry Direction
-#&gt;      1:                                                                 
-#&gt;      2:                                                                 
-#&gt;      3:                                                                 
-#&gt;      4:                                                                 
-#&gt;      5:                                                                 
-#&gt;     ---                                                                 
-#&gt; 111065:                                                                 
-#&gt; 111066:                                                                 
-#&gt; 111067:                                                                 
-#&gt; 111068:                                                                 
-#&gt; 111069:                                                                 
-#&gt;         Ferry Terminal Name Latitude Longitude
-#&gt;      1:                     40.70828 -73.79160
-#&gt;      2:                     40.72104 -73.90945
-#&gt;      3:                     40.84333 -73.93914
-#&gt;      4:                     40.77801 -73.98021
-#&gt;      5:                     40.80769 -73.94739
-#&gt;     ---                                       
-#&gt; 111065:                           NA        NA
-#&gt; 111066:                     40.65616 -73.76735
-#&gt; 111067:                     40.74030 -73.97695
-#&gt; 111068:                     40.64018 -73.95531
-#&gt; 111069:                     40.64002 -73.90072
-#&gt;                                         Location
-#&gt;      1:  (40.70827532593202, -73.79160395779721)
-#&gt;      2: (40.721040535628305, -73.90945306791765)
-#&gt;      3:  (40.84332975466513, -73.93914371913482)
-#&gt;      4:   (40.7780087446372, -73.98021349023975)
-#&gt;      5:  (40.80769092704951, -73.94738703491433)
-#&gt;     ---                                         
-#&gt; 111065:                                         
-#&gt; 111066: (40.656160351546845, -73.76735262738222)
-#&gt; 111067: (40.740295354643706, -73.97695165980414)
-#&gt; 111068:  (40.64018174662485, -73.95530566958138)
-#&gt; 111069: (40.640024057399216, -73.90071711703163)</code></pre>
+...</code></pre>
 </div>
-<div id="selecting-columns-and-rows" class="section level2">
-<h2>2.3 Selecting columns and rows</h2>
-<p>There are several ways to select a columns in <code>data.table</code>. Here are some of common ways:</p>
-<ul>
-<li>By name using character</li>
-</ul>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1">complaints[, <span class="st">&quot;Complaint Type&quot;</span>]</a></code></pre></div>
-<pre><code>#&gt;                  Complaint Type
-#&gt;      1: Noise - Street/Sidewalk
-#&gt;      2:         Illegal Parking
-#&gt;      3:      Noise - Commercial
-#&gt;      4:         Noise - Vehicle
-#&gt;      5:                  Rodent
-#&gt;     ---                        
-#&gt; 111065: Maintenance or Facility
-#&gt; 111066:         Illegal Parking
-#&gt; 111067: Noise - Street/Sidewalk
-#&gt; 111068:      Noise - Commercial
-#&gt; 111069:        Blocked Driveway</code></pre>
-<ul>
-<li>By position using integer</li>
-</ul>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1">complaints[, <span class="dv">6</span>]</a></code></pre></div>
-<pre><code>#&gt;                  Complaint Type
-#&gt;      1: Noise - Street/Sidewalk
-#&gt;      2:         Illegal Parking
-#&gt;      3:      Noise - Commercial
-#&gt;      4:         Noise - Vehicle
-#&gt;      5:                  Rodent
-#&gt;     ---                        
-#&gt; 111065: Maintenance or Facility
-#&gt; 111066:         Illegal Parking
-#&gt; 111067: Noise - Street/Sidewalk
-#&gt; 111068:      Noise - Commercial
-#&gt; 111069:        Blocked Driveway</code></pre>
-<ul>
-<li>By name using bare column names</li>
-</ul>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1">complaints[, <span class="kw">list</span>(<span class="st">`</span><span class="dt">Complaint Type</span><span class="st">`</span>)] <span class="co"># or complaints[, .(`Complaint Type`)]</span></a></code></pre></div>
-<pre><code>#&gt;                  Complaint Type
-#&gt;      1: Noise - Street/Sidewalk
-#&gt;      2:         Illegal Parking
-#&gt;      3:      Noise - Commercial
-#&gt;      4:         Noise - Vehicle
-#&gt;      5:                  Rodent
-#&gt;     ---                        
-#&gt; 111065: Maintenance or Facility
-#&gt; 111066:         Illegal Parking
-#&gt; 111067: Noise - Street/Sidewalk
-#&gt; 111068:      Noise - Commercial
-#&gt; 111069:        Blocked Driveway</code></pre>
-</div>
-<div id="selecting-multiple-columns" class="section level2">
-<h2>2.4 Selecting multiple columns</h2>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1"><span class="co">## integer indexing (like data.frame)</span></a>
-<a class="sourceLine" id="cb12-2" title="2">complaints[, <span class="dv">1</span><span class="op">:</span><span class="dv">3</span>]</a></code></pre></div>
+<div id="selecting-multiple-columns-and-rows" class="section level2">
+<h2>2.3 Selecting multiple columns and rows</h2>
+<p>In <a href="http://htmlpreview.github.io/?https://github.com/chuvanan/rdatatable-cookbook/blob/master/cookbook/chapter1-reading-from-a-csv.html">chapter 1</a>, we’ve learnt how to select one column. The syntax remains the same for selecting multiple variables, and the output is always a new <code>data.table</code>.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1"><span class="co">## integer indexing (like data.frame)</span></a>
+<a class="sourceLine" id="cb6-2" title="2">complaints[, <span class="dv">1</span><span class="op">:</span><span class="dv">3</span>]</a></code></pre></div>
 <pre><code>#&gt;         Unique Key           Created Date            Closed Date
 #&gt;      1:   26589651 10/31/2013 02:08:41 AM                       
 #&gt;      2:   26593698 10/31/2013 02:01:04 AM                       
@@ -768,9 +532,9 @@ summary {
 #&gt; 111067:   26428987 10/04/2013 12:00:45 AM 10/04/2013 01:25:01 AM
 #&gt; 111068:   26426115 10/04/2013 12:00:28 AM 10/04/2013 04:17:32 AM
 #&gt; 111069:   26428033 10/04/2013 12:00:10 AM 10/04/2013 01:20:52 AM</code></pre>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1"><span class="co">## character indexing (like data.frame)</span></a>
-<a class="sourceLine" id="cb14-2" title="2">output1 &lt;-<span class="st"> </span>complaints[, <span class="kw">c</span>(<span class="st">&quot;Agency Name&quot;</span>, <span class="st">&quot;Street Name&quot;</span>, <span class="st">&quot;Status&quot;</span>)]</a>
-<a class="sourceLine" id="cb14-3" title="3"><span class="kw">print</span>(output1)</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1"><span class="co">## character indexing (like data.frame)</span></a>
+<a class="sourceLine" id="cb8-2" title="2">output1 &lt;-<span class="st"> </span>complaints[, <span class="kw">c</span>(<span class="st">&quot;Agency Name&quot;</span>, <span class="st">&quot;Street Name&quot;</span>, <span class="st">&quot;Status&quot;</span>)]</a>
+<a class="sourceLine" id="cb8-3" title="3"><span class="kw">print</span>(output1)</a></code></pre></div>
 <pre><code>#&gt;                                     Agency Name     Street Name   Status
 #&gt;      1:         New York City Police Department      169 STREET Assigned
 #&gt;      2:         New York City Police Department       58 AVENUE     Open
@@ -783,27 +547,62 @@ summary {
 #&gt; 111067:         New York City Police Department  EAST 28 STREET   Closed
 #&gt; 111068:         New York City Police Department FLATBUSH AVENUE   Closed
 #&gt; 111069:         New York City Police Department  EAST 94 STREET   Closed</code></pre>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" title="1"><span class="co">## bare column names (only works with data.table)</span></a>
-<a class="sourceLine" id="cb16-2" title="2">output2 &lt;-<span class="st"> </span>complaints[, .(<span class="st">`</span><span class="dt">Agency Name</span><span class="st">`</span>, <span class="st">`</span><span class="dt">Street Name</span><span class="st">`</span>, Status)]</a>
-<a class="sourceLine" id="cb16-3" title="3"><span class="kw">identical</span>(output1, output2)</a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1"><span class="co">## bare column names (only works with data.table)</span></a>
+<a class="sourceLine" id="cb10-2" title="2">output2 &lt;-<span class="st"> </span>complaints[, .(<span class="st">`</span><span class="dt">Agency Name</span><span class="st">`</span>, <span class="st">`</span><span class="dt">Street Name</span><span class="st">`</span>, Status)]</a>
+<a class="sourceLine" id="cb10-3" title="3"><span class="kw">identical</span>(output1, output2)</a></code></pre></div>
 <pre><code>#&gt; [1] TRUE</code></pre>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" title="1"><span class="co">## or more verbose way:</span></a>
-<a class="sourceLine" id="cb18-2" title="2">output3 &lt;-<span class="st"> </span>complaints[, <span class="kw">list</span>(<span class="st">`</span><span class="dt">Agency Name</span><span class="st">`</span>, <span class="st">`</span><span class="dt">Street Name</span><span class="st">`</span>, Status)]</a>
-<a class="sourceLine" id="cb18-3" title="3"><span class="kw">identical</span>(output1, output3)</a></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1"><span class="co">## or more verbose way:</span></a>
+<a class="sourceLine" id="cb12-2" title="2">output3 &lt;-<span class="st"> </span>complaints[, <span class="kw">list</span>(<span class="st">`</span><span class="dt">Agency Name</span><span class="st">`</span>, <span class="st">`</span><span class="dt">Street Name</span><span class="st">`</span>, Status)]</a>
+<a class="sourceLine" id="cb12-3" title="3"><span class="kw">identical</span>(output1, output3)</a></code></pre></div>
 <pre><code>#&gt; [1] TRUE</code></pre>
+<p>To get the first 5 rows of a <code>data.table</code>, we can use a slice: <code>dt[1:5]</code></p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1">complaints[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>] <span class="co"># output is truncated</span></a></code></pre></div>
+<pre><code>#&gt;    Unique Key           Created Date            Closed Date Agency
+#&gt; 1:   26589651 10/31/2013 02:08:41 AM                          NYPD
+#&gt; 2:   26593698 10/31/2013 02:01:04 AM                          NYPD
+#&gt; 3:   26594139 10/31/2013 02:00:24 AM 10/31/2013 02:40:32 AM   NYPD
+#&gt; 4:   26595721 10/31/2013 01:56:23 AM 10/31/2013 02:21:48 AM   NYPD
+#&gt; 5:   26590930 10/31/2013 01:53:44 AM                         DOHMH
+#&gt;                                Agency Name          Complaint Type
+#&gt; 1:         New York City Police Department Noise - Street/Sidewalk
+#&gt; 2:         New York City Police Department         Illegal Parking
+#&gt; 3:         New York City Police Department      Noise - Commercial
+#&gt; 4:         New York City Police Department         Noise - Vehicle
+#&gt; 5: Department of Health and Mental Hygiene                  Rodent
+#&gt;                      Descriptor       Location Type Incident Zip
+#&gt; 1:                 Loud Talking     Street/Sidewalk        11432
+#&gt; 2: Commercial Overnight Parking     Street/Sidewalk        11378
+#&gt; 3:             Loud Music/Party Club/Bar/Restaurant        10032
+#&gt; 4:               Car/Truck Horn     Street/Sidewalk        10023
+#&gt; 5: Condition Attracting Rodents          Vacant Lot        10027
+#&gt;    Incident Address     Street Name  Cross Street 1
+#&gt; 1: 90-03 169 STREET      169 STREET       90 AVENUE
+#&gt; 2:        58 AVENUE       58 AVENUE        58 PLACE
+#&gt; 3:    4060 BROADWAY        BROADWAY WEST 171 STREET
+#&gt; 4:   WEST 72 STREET  WEST 72 STREET COLUMBUS AVENUE
+#&gt; 5:  WEST 124 STREET WEST 124 STREET    LENOX AVENUE
+...</code></pre>
+<p>We can combine these to get the first 5 rows of a column:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" title="1">complaints[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>, .(<span class="st">`</span><span class="dt">Agency Name</span><span class="st">`</span>)]</a></code></pre></div>
+<pre><code>#&gt;                                Agency Name
+#&gt; 1:         New York City Police Department
+#&gt; 2:         New York City Police Department
+#&gt; 3:         New York City Police Department
+#&gt; 4:         New York City Police Department
+#&gt; 5: Department of Health and Mental Hygiene</code></pre>
 </div>
 <div id="whats-the-most-common-complaint-type" class="section level2">
-<h2>2.5 What’s the most common complaint type?</h2>
+<h2>2.4 What’s the most common complaint type?</h2>
 <ul>
-<li>The normal way</li>
+<li>The base way</li>
 </ul>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" title="1">count_complaint &lt;-<span class="st"> </span>complaints[, <span class="kw">tapply</span>(<span class="st">`</span><span class="dt">Unique Key</span><span class="st">`</span>, <span class="st">`</span><span class="dt">Complaint Type</span><span class="st">`</span>, length)]</a>
-<a class="sourceLine" id="cb20-2" title="2"><span class="co">## or: complaints[, table(`Complaint Type`)]</span></a>
-<a class="sourceLine" id="cb20-3" title="3"><span class="kw">print</span>(<span class="kw">class</span>(count_complaint))</a></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" title="1">count_complaint &lt;-<span class="st"> </span><span class="kw">tapply</span>(complaints<span class="op">$</span><span class="st">`</span><span class="dt">Unique Key</span><span class="st">`</span>, complaints<span class="op">$</span><span class="st">`</span><span class="dt">Complaint Type</span><span class="st">`</span>, length)</a>
+<a class="sourceLine" id="cb18-2" title="2"><span class="co">## or: table(complaints$`Complaint Type`)</span></a>
+<a class="sourceLine" id="cb18-3" title="3"><span class="kw">print</span>(<span class="kw">class</span>(count_complaint))</a></code></pre></div>
 <pre><code>#&gt; [1] &quot;array&quot;</code></pre>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" title="1"><span class="co">## noted that the output is an array, not a data.table object, you can treat it like a vector (i.e sorting it)</span></a>
-<a class="sourceLine" id="cb22-2" title="2">count_complaint &lt;-<span class="st"> </span>count_complaint[<span class="kw">order</span>(count_complaint, <span class="dt">decreasing =</span> <span class="ot">TRUE</span>)]</a>
-<a class="sourceLine" id="cb22-3" title="3">count_complaint[<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>]</a></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" title="1"><span class="co">## noted that the output is an array, you can treat it like a vector (i.e sorting it)</span></a>
+<a class="sourceLine" id="cb20-2" title="2">count_complaint &lt;-<span class="st"> </span>count_complaint[<span class="kw">order</span>(count_complaint, <span class="dt">decreasing =</span> <span class="ot">TRUE</span>)]</a>
+<a class="sourceLine" id="cb20-3" title="3">count_complaint[<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>]</a></code></pre></div>
 <pre><code>#&gt;                HEATING   GENERAL CONSTRUCTION Street Light Condition 
 #&gt;                  14200                   7471                   7117 
 #&gt; DOF Literature Request               PLUMBING        PAINT - PLASTER 
@@ -815,9 +614,9 @@ summary {
 <ul>
 <li>The <code>data.table</code> way</li>
 </ul>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" title="1">count_complaint2 &lt;-<span class="st"> </span>complaints[, .(<span class="dt">n =</span> <span class="kw">length</span>(<span class="st">`</span><span class="dt">Unique Key</span><span class="st">`</span>)), by =<span class="st"> </span>.(<span class="st">`</span><span class="dt">Complaint Type</span><span class="st">`</span>)]</a>
-<a class="sourceLine" id="cb24-2" title="2">count_complaint2 &lt;-<span class="st"> </span>count_complaint2[<span class="kw">order</span>(n, <span class="dt">decreasing =</span> <span class="ot">TRUE</span>)]</a>
-<a class="sourceLine" id="cb24-3" title="3"><span class="kw">print</span>(count_complaint2)</a></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" title="1">count_complaint2 &lt;-<span class="st"> </span>complaints[, .(<span class="dt">n =</span> <span class="kw">length</span>(<span class="st">`</span><span class="dt">Unique Key</span><span class="st">`</span>)), by =<span class="st"> </span>.(<span class="st">`</span><span class="dt">Complaint Type</span><span class="st">`</span>)]</a>
+<a class="sourceLine" id="cb22-2" title="2">count_complaint2 &lt;-<span class="st"> </span>count_complaint2[<span class="kw">order</span>(n, <span class="dt">decreasing =</span> <span class="ot">TRUE</span>)]</a>
+<a class="sourceLine" id="cb22-3" title="3"><span class="kw">print</span>(count_complaint2)</a></code></pre></div>
 <pre><code>#&gt;               Complaint Type     n
 #&gt;   1:                 HEATING 14200
 #&gt;   2:    GENERAL CONSTRUCTION  7471
@@ -830,10 +629,15 @@ summary {
 #&gt; 163:  Highway Sign - Damaged     1
 #&gt; 164:            Ferry Permit     1
 #&gt; 165: X-Ray Machine/Equipment     1</code></pre>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" title="1"><span class="co">## or more concise</span></a>
-<a class="sourceLine" id="cb26-2" title="2">count_complain3 &lt;-<span class="st"> </span>complaints[, .(<span class="dt">n =</span> .N), by =<span class="st"> </span>.(<span class="st">`</span><span class="dt">Complaint Type</span><span class="st">`</span>)][<span class="kw">order</span>(n, <span class="dt">decreasing =</span> <span class="ot">TRUE</span>)]</a>
-<a class="sourceLine" id="cb26-3" title="3"><span class="kw">identical</span>(count_complaint2, count_complain3)</a></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" title="1"><span class="co">## or more concise</span></a>
+<a class="sourceLine" id="cb24-2" title="2">count_complain3 &lt;-<span class="st"> </span>complaints[, .(<span class="dt">n =</span> .N), by =<span class="st"> </span>.(<span class="st">`</span><span class="dt">Complaint Type</span><span class="st">`</span>)][<span class="kw">order</span>(n, <span class="dt">decreasing =</span> <span class="ot">TRUE</span>)]</a>
+<a class="sourceLine" id="cb24-3" title="3"><span class="kw">identical</span>(count_complaint2, count_complain3)</a></code></pre></div>
 <pre><code>#&gt; [1] TRUE</code></pre>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" title="1"><span class="kw">ggplot</span>(count_complaint2[<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>], <span class="kw">aes</span>(<span class="kw">reorder</span>(<span class="st">`</span><span class="dt">Complaint Type</span><span class="st">`</span>, n), n)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb26-2" title="2"><span class="st">    </span><span class="kw">geom_col</span>(<span class="dt">fill =</span> <span class="st">&quot;red4&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb26-3" title="3"><span class="st">    </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="ot">NULL</span>, <span class="dt">y =</span> <span class="ot">NULL</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb26-4" title="4"><span class="st">    </span><span class="kw">coord_flip</span>()</a></code></pre></div>
+<p><img src="data:image/png;base64,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" width="672" style="display: block; margin: auto;" /></p>
 </div>
 
 

@@ -6,6 +6,31 @@ output:
     highlight: tango
 ---
 
+```{r, include=FALSE}
+library(knitr)
+hook_output <- knit_hooks$get("output")
+knit_hooks$set(output = function(x, options) {
+    lines <- options$output.lines
+    if (is.null(lines)) {
+        return(hook_output(x, options))  # pass to default hook
+    }
+    x <- unlist(strsplit(x, "\n"))
+    more <- "..."
+    if (length(lines)==1) {        # first n lines
+        if (length(x) > lines) {
+                                        # truncate the output, but add ....
+            x <- c(head(x, lines), more)
+        }
+    } else {
+        x <- c(more, x[lines], more)
+    }
+                                        # paste these lines together
+    x <- paste(c(x, ""), collapse = "\n")
+    hook_output(x, options)
+})
+```
+
+
 
 ```{r, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, fig.align = "center", comment = "#>", message = FALSE)
@@ -15,10 +40,19 @@ knitr::opts_chunk$set(echo = TRUE, fig.align = "center", comment = "#>", message
 require(data.table)
 require(ggplot2)
 theme_set(
-    theme_bw(base_size = 17, base_family = "Lato") +
+    theme_bw(base_size = 14, base_family = "Lato") +
     theme(panel.grid = element_blank(), panel.border = element_blank())
 )
 ```
+
+In this chapter we will be learning syntax for performing most common data
+manipulation tasks:
+
+* pick variables based on their names
+
+* pick rows based on their values
+
+* aggregate data (counting) by groups
 
 ## 2.1 Import data
 
@@ -32,40 +66,19 @@ sprintf("Shape of the dataset: %d observations and %d variables", NROW(complaint
 
 ## 2.2 What's even in it? (the summary)
 
-Let's take a look at the dataset. By default, S3 `print` method for `data.table`
-object only show the first 5 rows and the last 5 rows. (For illustrative
-purpose, I only show the first six columns)
+Let's take a look at the dataset. By default, the `print` function for
+`data.table` object only show the first 5 rows and the last 5 rows. (For
+illustrative purpose, I already truncated the output)
 
-```{r}
-print(complaints)
+```{r output.lines = 24}
+print(complaints) # long-scrolling
 ```
 
-## 2.3 Selecting columns and rows
+## 2.3 Selecting multiple columns and rows
 
-There are several ways to select a columns in `data.table`. Here are some of
-common ways:
-
-* By name using character
-
-```{r}
-complaints[, "Complaint Type"]
-```
-
-* By position using integer
-
-```{r}
-complaints[, 6]
-```
-
-* By name using bare column names
-
-```{r}
-complaints[, list(`Complaint Type`)] # or complaints[, .(`Complaint Type`)]
-```
-
-
-## 2.4 Selecting multiple columns
-
+In [chapter 1](http://htmlpreview.github.io/?https://github.com/chuvanan/rdatatable-cookbook/blob/master/cookbook/chapter1-reading-from-a-csv.html),
+we've learnt how to select one column. The syntax remains the same for
+selecting multiple variables, and the output is always a new `data.table`.
 
 ```{r}
 ## integer indexing (like data.frame)
@@ -81,16 +94,28 @@ output3 <- complaints[, list(`Agency Name`, `Street Name`, Status)]
 identical(output1, output3)
 ```
 
-## 2.5 What's the most common complaint type?
+To get the first 5 rows of a `data.table`, we can use a slice: `dt[1:5]`
 
+```{r, output.lines = 24}
+complaints[1:5] # output is truncated
+```
 
-* The normal way
+We can combine these to get the first 5 rows of a column:
 
 ```{r}
-count_complaint <- complaints[, tapply(`Unique Key`, `Complaint Type`, length)]
-## or: complaints[, table(`Complaint Type`)]
+complaints[1:5, .(`Agency Name`)]
+```
+
+## 2.4 What's the most common complaint type?
+
+
+* The base way
+
+```{r}
+count_complaint <- tapply(complaints$`Unique Key`, complaints$`Complaint Type`, length)
+## or: table(complaints$`Complaint Type`)
 print(class(count_complaint))
-## noted that the output is an array, not a data.table object, you can treat it like a vector (i.e sorting it)
+## noted that the output is an array, you can treat it like a vector (i.e sorting it)
 count_complaint <- count_complaint[order(count_complaint, decreasing = TRUE)]
 count_complaint[1:10]
 ```
@@ -104,4 +129,11 @@ print(count_complaint2)
 ## or more concise
 count_complain3 <- complaints[, .(n = .N), by = .(`Complaint Type`)][order(n, decreasing = TRUE)]
 identical(count_complaint2, count_complain3)
+```
+
+```{r}
+ggplot(count_complaint2[1:10], aes(reorder(`Complaint Type`, n), n)) +
+    geom_col(fill = "red4") +
+    labs(x = NULL, y = NULL) +
+    coord_flip()
 ```
