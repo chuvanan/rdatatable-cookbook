@@ -50,7 +50,7 @@ where necessary. Of course, all remaining errors are mine.
 ``` bash
 git clone https://github.com/chuvanan/rdatatable-cookbook.git
 cd rdatatable-cookbook
-Rscript -e "install.packages('renv'); renv::restore()"
+Rscript -e "install.packages('renv'); renv::init()"
 ```
 
 * The above code will download the repository to your machine. And the great
