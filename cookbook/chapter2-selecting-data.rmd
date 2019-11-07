@@ -18,18 +18,17 @@ knit_hooks$set(output = function(x, options) {
     more <- "..."
     if (length(lines)==1) {        # first n lines
         if (length(x) > lines) {
-                                        # truncate the output, but add ....
+            ## truncate the output, but add ....
             x <- c(head(x, lines), more)
         }
     } else {
         x <- c(more, x[lines], more)
     }
-                                        # paste these lines together
+    ## paste these lines together
     x <- paste(c(x, ""), collapse = "\n")
     hook_output(x, options)
 })
 ```
-
 
 
 ```{r, include=FALSE}
@@ -137,3 +136,28 @@ ggplot(count_complaint2[1:10], aes(reorder(`Complaint Type`, n), n)) +
     labs(x = NULL, y = NULL) +
     coord_flip()
 ```
+
+## 2.5 How it works
+
+The basics of working with `data.table` are quite simple:
+
+```{r, echo=FALSE, out.width="60%"}
+knitr::include_graphics("dt.png")
+```
+
+[*I took the image from the [slide](https://twitter.com/arun_sriniv/status/1150287843417346048)
+of Arun Srinivasan*]
+
+which means: take data.table `dt`, subset rows using `i` and manipulate columns
+with `j`, grouped according to `by`. This syntax allows you to combine several
+operations in a very concise and consistent expression.
+
+For example, the following line can be read as count the number of `Unique Key`
+per `Complaint Type`.
+
+```{r, eval=FALSE}
+complaints[, .(n = length(`Unique Key`)), by = .(`Complaint Type`)]
+```
+
+For further documentation on `data.table`, you could start with [intro vignette](https://rdatatable.gitlab.io/data.table/articles/datatable-intro.html),
+or learn from community-contributed [articles](https://github.com/Rdatatable/data.table/wiki/Articles).
