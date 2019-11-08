@@ -8,11 +8,11 @@ This is a [clone](https://github.com/jvns/pandas-cookbook) of the fantastic
 `Pandas cookbook` by Julia Evans, but using the excellent R's [`data.table`](https://rdatatable.gitlab.io/data.table/)
 package.
 
-This cookbook provides you with concrete examples analyzing real-world data so
-that you'll find it easier to getting started with `data.table`.
+This cookbook provides you with concrete examples of analyzing real-world data
+so that you'll find it easier to getting started with `data.table`.
 
-I am surprised that Julia's cookbook repo currently has about 4.1k stars (as of
-Oct 2019). To put the number in perspective, two of the most popular R packages
+I am surprised that Julia's repo currently has about 4.1k stars (as of Oct
+2019). To put the number in perspective, two of the most popular R packages
 `dplyr` and `ggplot2` has 3.1k and 4.1k stars respectively (`data.table` , by
 the way, has been starred 2.1k times).
 
