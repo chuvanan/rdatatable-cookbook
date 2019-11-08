@@ -51,9 +51,9 @@ If you prefer working on commmand line:
 
 ``` bash
 git clone https://github.com/chuvanan/rdatatable-cookbook.git
-cd rdatatable-cookbook
+cd rdatatable-cookbook # move to cookbook diretory
 R # start R session, right after initiation R will attempt to install `renv` (locally)
-renv::restore()
+renv::restore() # restore all dependencies
 ```
 
 In case you are more comfortable on RStudio, you need to set folder
