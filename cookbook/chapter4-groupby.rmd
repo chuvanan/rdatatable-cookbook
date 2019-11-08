@@ -39,7 +39,8 @@ head(bikes)
 
 ```{r}
 ggplot(bikes, aes(Date, `Berri 1`)) +
-    geom_line(color = "palegreen4")
+    geom_line(color = "palegreen4") +
+    theme(panel.grid = element_line(size = 0.3, color = "gray90"))
 ```
 
 
