@@ -45,13 +45,21 @@ where necessary. Of course, all remaining errors are mine.
 
 * The easiest way is to clone the repository to your local computer. You need
   the latest version of `R` (3.6.1) installed before you do the following
-  instructions:
+  instructions.
+
+If you prefer working on commmand line:
 
 ``` bash
 git clone https://github.com/chuvanan/rdatatable-cookbook.git
 cd rdatatable-cookbook
-Rscript -e "install.packages('renv'); renv::init()"
+R # start R session, right after initiation R will attempt to install `renv` (locally)
+renv::restore()
 ```
+
+In case you are more comfortable on RStudio, you need to set folder
+`rdatatable-cookbook` as working directory and run `renv::init()` and later
+`renv::restore()`.
+
 
 * The above code will download the repository to your machine. And the great
   [`renv`](https://rstudio.github.io/renv/index.html) package will do the
