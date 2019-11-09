@@ -47,11 +47,11 @@ where necessary. Of course, all remaining errors are mine.
   the latest version of `R` (3.6.1) installed before you do the following
   instructions.
 
-If you prefer working on commmand line:
+If you prefer working on command line:
 
 ``` bash
 git clone https://github.com/chuvanan/rdatatable-cookbook.git
-cd rdatatable-cookbook # move to cookbook diretory
+cd rdatatable-cookbook # move to cookbook directory
 R # start R session, right after initiation R will attempt to install `renv` (locally)
 renv::restore() # restore all dependencies
 ```
