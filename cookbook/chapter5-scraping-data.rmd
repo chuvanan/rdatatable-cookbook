@@ -68,10 +68,5 @@ weather_mar2012 <- fread(url, skip = 15, encoding = "Latin-1", header = TRUE)
 ## warning: the API didn't work anymore
 ```
 
-# 5.2 Plotting the temperature by hour of a day
-
-
-# 5.3 Getting the whole year of data
-
-
-# 5.4 Saving to a CSV
+*Note: The API, used in Julia's cookbook, has changed considerably, so this
+chapter ends up with no further content.*
