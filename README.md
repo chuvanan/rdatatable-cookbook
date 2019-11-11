@@ -2,8 +2,6 @@
 
 ## `data.table` cookbook
 
-[**work in progress**]
-
 This is a [clone](https://github.com/jvns/pandas-cookbook) of the fantastic
 `Pandas cookbook` by Julia Evans, but using the excellent R's [`data.table`](https://rdatatable.gitlab.io/data.table/)
 package.
