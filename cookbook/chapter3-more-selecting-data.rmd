@@ -32,7 +32,7 @@ I'd like to know which borough has the most noise complaints. First, we'll take
 a look at the data to see what it looks like:
 
 ```{r}
-complaints[1:6, 1:6]
+complaints[1:6, 1:6] # look at the column `Complaint Type`
 ```
 
 To get the noise complaints, we need to find the rows where the "Complaint Type"

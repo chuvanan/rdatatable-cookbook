@@ -26,12 +26,12 @@ theme_set(
 
 So far we've only talked about reading data from CSV files. That's a pretty
 common way to store data, but there are many others! HTML, JSON, relational
-databases, Excel (!!!), HDF5, Stata, to name a few. In this chapter we'll talk
-about reading data from SQL databases.
+databases, Excel (!!!), HDF5, Stata, to name but a few. In this chapter we'll
+talk about reading data from relational databases.
 
-I am going to introduce you to two new packages `DBI` and `RSQLite` rather than
-`data.table` because it was not designed to talk to relational databases, so it
-was not able to read or execute SQL.
+I am going to introduce you to two new packages `DBI` and `RSQLite`.
+`data.table` is not mentioned in this chapter because it was not designed to
+talk to relational databases, so it was not able to read or execute SQL.
 
 
 ```{r}

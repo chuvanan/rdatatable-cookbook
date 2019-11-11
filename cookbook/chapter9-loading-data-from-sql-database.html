@@ -475,8 +475,8 @@ summary {
 <a class="sourceLine" id="cb1-7" title="7">)</a></code></pre></div>
 <div id="reading-data-from-sql-databases" class="section level1">
 <h1>9.1 Reading data from SQL databases</h1>
-<p>So far we’ve only talked about reading data from CSV files. That’s a pretty common way to store data, but there are many others! HTML, JSON, relational databases, Excel (!!!), HDF5, Stata, to name a few. In this chapter we’ll talk about reading data from SQL databases.</p>
-<p>I am going to introduce you to two new packages <code>DBI</code> and <code>RSQLite</code> rather than <code>data.table</code> because it was not designed to talk to relational databases, so it was not able to read or execute SQL.</p>
+<p>So far we’ve only talked about reading data from CSV files. That’s a pretty common way to store data, but there are many others! HTML, JSON, relational databases, Excel (!!!), HDF5, Stata, to name but a few. In this chapter we’ll talk about reading data from relational databases.</p>
+<p>I am going to introduce you to two new packages <code>DBI</code> and <code>RSQLite</code>. <code>data.table</code> is not mentioned in this chapter because it was not designed to talk to relational databases, so it was not able to read or execute SQL.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1">weather_db &lt;-<span class="st"> </span>DBI<span class="op">::</span><span class="kw">dbConnect</span>(RSQLite<span class="op">::</span><span class="kw">SQLite</span>(), <span class="st">&quot;../data/weather_2012.sqlite&quot;</span>)</a>
 <a class="sourceLine" id="cb2-2" title="2"><span class="kw">dbListTables</span>(weather_db)</a></code></pre></div>
 <pre><code>#&gt; [1] &quot;sqlite_sequence&quot; &quot;weather_2012&quot;</code></pre>

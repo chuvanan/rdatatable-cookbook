@@ -97,7 +97,5 @@ dataframe and plot them together:
 ```{r}
 weather_stats <- merge(monthly_temp, monthly_snow, by = "month")
 print(weather_stats)
-
 grid.arrange(p1, p2, ncol = 1)
-
 ```
