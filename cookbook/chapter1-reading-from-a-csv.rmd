@@ -111,3 +111,10 @@ bikes[, Date := as.Date(Date, "%d/%m/%Y")] # don't worry if you don't understand
 ggplot(bikes, aes(Date, `Berri 1`)) +
     geom_line(color = "orange")
 ```
+
+# 1.5 Other gems
+
+`data.table::fread()` is famous for its speed, but there's much more than
+that. For other wonderful gems of `data.table::fread()`, I highly recommend you
+to take a loot at this [wiki post](https://github.com/Rdatatable/data.table/wiki/Convenience-features-of-fread)
+by `data.table`'s author Matt Dowle.
